@@ -10,9 +10,9 @@ namespace Todo.Backend.Controllers;
 [ApiController]
 public class ToDoTaskController : ControllerBase
 {
-    private readonly ToDoTaskServiceInterface _iToDoTaskService;
+    private readonly IToDoTaskService _iToDoTaskService;
 
-    public ToDoTaskController(ToDoTaskServiceInterface itoDoTaskService)
+    public ToDoTaskController(IToDoTaskService itoDoTaskService)
     {
         _iToDoTaskService = itoDoTaskService; 
     }
@@ -21,7 +21,31 @@ public class ToDoTaskController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> Create(CreateToDoTaskRequestDTO requestDto)
     {
-        await _iToDoTaskService.CreateTask(requestDto);
+        return Ok(await _iToDoTaskService.CreateTask(requestDto));
+    }
+
+    [HttpGet]
+    public async Task<ActionResult> GetAll()
+    {
+        return Ok(await _iToDoTaskService.GetAllTasks());
+    }
+
+    [HttpPut("Description")]
+    public async Task<ActionResult> UpdateDescription(UpdateDescriptionToDoTaskRequestDTO request)
+    {
+        return Ok(await _iToDoTaskService.UpdateDescription(request));
+    }
+
+    [HttpPut("Status")]
+    public async Task<ActionResult> UpdateStatus(UpdateStatusToDoTaskRequestDTO requestDto)
+    {
+        return Ok(await _iToDoTaskService.UpdateStatus(requestDto));
+    }
+
+    [HttpDelete]
+    public async Task<ActionResult> Delete(DeleteToDoTaskRequestDTO requestDto)
+    {
+        await _iToDoTaskService.DeleteTask(requestDto);
 
         return Ok();
     }
