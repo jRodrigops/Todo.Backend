@@ -6,20 +6,18 @@ using Todo.Backend.Models;
 
 namespace Todo.Backend.Repositories;
 
-public class ToDoTaskRepository : ToDoTaskRepositoryInterface
+public class ToDoTaskRepository : IToDoTaskRepository
 {
     private readonly TodoDbContext _todoDbContext;
-    private readonly ToDoTaskRepositoryInterface _taskRepositoryInterface;
 
-    public ToDoTaskRepository(TodoDbContext todoDbContext, ToDoTaskRepositoryInterface taskRepositoryInterface)
+    public ToDoTaskRepository(TodoDbContext todoDbContext)
     {
         _todoDbContext = todoDbContext;
-        _taskRepositoryInterface = taskRepositoryInterface;         
     }
 
     public async Task AddTask(ToDoTask newTask)
     {
-        _todoDbContext.ToDoTask.Add(newTask);
+        _todoDbContext.Add(newTask);
         await _todoDbContext.SaveChangesAsync();
     }
 
@@ -28,5 +26,12 @@ public class ToDoTaskRepository : ToDoTaskRepositoryInterface
         List<ToDoTask> tasks = _todoDbContext.ToDoTask.ToList();
 
         return tasks;
+    }
+
+    public async Task<ToDoTask?> GetById(int id)
+    {
+        ToDoTask? todoTask = _todoDbContext.ToDoTask.Where(tdt => tdt.idTask == id).FirstOrDefault();
+
+        return todoTask;
     }
 }
