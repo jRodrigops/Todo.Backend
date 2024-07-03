@@ -11,4 +11,9 @@ public class TodoDbContext  : DbContext
     }
 
     public DbSet<ToDoTask> ToDoTask { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder mb)
+    {
+
+    }
 }
