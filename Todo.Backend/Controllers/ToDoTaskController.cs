@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Query;
 using System.Runtime.CompilerServices;
 using Todo.Backend.DTOs;
 using Todo.Backend.Models;
@@ -17,35 +18,34 @@ public class ToDoTaskController : ControllerBase
         _iToDoTaskService = itoDoTaskService; 
     }
 
-
-    [HttpPost]
+    [HttpPost("Create")]
     public async Task<ActionResult> Create(CreateToDoTaskRequestDTO requestDto)
     {
         return Ok(await _iToDoTaskService.CreateTask(requestDto));
     }
 
-    [HttpGet]
+    [HttpGet("GetAll")]
     public async Task<ActionResult> GetAll()
     {
         return Ok(await _iToDoTaskService.GetAllTasks());
     }
 
     [HttpPut("Description")]
-    public async Task<ActionResult> UpdateDescription(UpdateDescriptionToDoTaskRequestDTO request)
+    public async Task<ActionResult> UpdateDescription(UpdateDescriptionToDoTaskRequestDTO request, int id)
     {
-        return Ok(await _iToDoTaskService.UpdateDescription(request));
+        return Ok(await _iToDoTaskService.UpdateDescription(request, id));
     }
 
     [HttpPut("Status")]
-    public async Task<ActionResult> UpdateStatus(UpdateStatusToDoTaskRequestDTO requestDto)
+    public async Task<ActionResult> UpdateStatus(int id)
     {
-        return Ok(await _iToDoTaskService.UpdateStatus(requestDto));
+        return Ok(await _iToDoTaskService.UpdateStatus(id));
     }
 
-    [HttpDelete]
-    public async Task<ActionResult> Delete(DeleteToDoTaskRequestDTO requestDto)
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> Delete(int id)
     {
-        await _iToDoTaskService.DeleteTask(requestDto);
+        await _iToDoTaskService.DeleteTask(id);
 
         return Ok();
     }
