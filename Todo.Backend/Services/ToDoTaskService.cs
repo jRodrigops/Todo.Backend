@@ -4,6 +4,7 @@ using Todo.Backend.Context;
 using Todo.Backend.DTOs;
 using Todo.Backend.Models;
 using Todo.Backend.Repositories;
+using Todo.Backend.TreatmentException;
 
 namespace Todo.Backend.Services;
 
@@ -24,7 +25,7 @@ public class ToDoTaskService : IToDoTaskService
     {
         if(requestDto.Description.Length > 30)
         {
-            throw new Exception("o campo de descrição passou de 30 caracteres");
+            throw new TreatedException("Bad Request", StatusCodes.Status400BadRequest, "o campo de descrição passou de 30 caracteres");
         }
 
         var newTask = _mapper.Map<ToDoTask>(requestDto);
@@ -45,15 +46,19 @@ public class ToDoTaskService : IToDoTaskService
         return listTaskResponseDTOs;
     }
 
-    public async Task<UpdateDescriptionToDoTaskResponseDTO> UpdateDescription(UpdateDescriptionToDoTaskRequestDTO request)
+    public async Task<UpdateDescriptionToDoTaskResponseDTO> UpdateDescription(UpdateDescriptionToDoTaskRequestDTO request, int id)
     {
-        ToDoTask? toDoTask = await _taskRepository.GetById(request.IdTask);
+        ToDoTask? toDoTask = await _taskRepository.GetById(id);
 
         if(toDoTask == null)
         {
-            throw new Exception("Esta Task não Existe");
-        }    
-
+            throw new TreatedException("Not Found", StatusCodes.Status404NotFound, "Esta task nao foi encontrada");
+        }
+        if(toDoTask.Completed == true)
+        {
+            throw new TreatedException("Bad Request", StatusCodes.Status400BadRequest, "Task ja completada não pode ser alterada");
+        }
+        
         toDoTask.Description = request.Description;
 
         _todoDbContext.SaveChanges();
@@ -62,14 +67,14 @@ public class ToDoTaskService : IToDoTaskService
 
         return updateDescriptionToDoTaskResponse;
     }
-
-    public async Task<UpdateStatusToDoTaskResponseDTO> UpdateStatus(UpdateStatusToDoTaskRequestDTO requestDto)
+    
+    public async Task<UpdateStatusToDoTaskResponseDTO> UpdateStatus(int id)
     {
-        ToDoTask? toDoTask = await _taskRepository.GetById(requestDto.IdTask);
+        ToDoTask? toDoTask = await _taskRepository.GetById(id);
 
         if (toDoTask == null)
         {
-            throw new Exception("Esta Task não Existe");
+            throw new TreatedException("Not Found", StatusCodes.Status404NotFound, "Esta task nao foi encontrada");
         }
 
         if (toDoTask.Completed == false)
@@ -88,13 +93,13 @@ public class ToDoTaskService : IToDoTaskService
         return responseDto;
     }
 
-    public async Task DeleteTask(DeleteToDoTaskRequestDTO requestDto)
+    public async Task DeleteTask(int id)
     {
-        ToDoTask? toDoTask = await _taskRepository.GetById(requestDto.idTask);
+        ToDoTask? toDoTask = await _taskRepository.GetById(id);
 
         if (toDoTask == null)
         {
-           throw new Exception("Esta Task não Existe");
+            throw new TreatedException("Not Found", StatusCodes.Status404NotFound, "Esta task nao foi encontrada");
         }
 
         _todoDbContext.Remove(toDoTask);

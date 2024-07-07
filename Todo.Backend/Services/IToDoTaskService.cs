@@ -6,7 +6,7 @@ public interface IToDoTaskService
 {
     Task<CreateToDoTaskResponseDTO> CreateTask(CreateToDoTaskRequestDTO requestDto);
     Task<List<ListToDoTaskResponseDTO>> GetAllTasks();
-    Task<UpdateDescriptionToDoTaskResponseDTO> UpdateDescription(UpdateDescriptionToDoTaskRequestDTO request);
-    Task<UpdateStatusToDoTaskResponseDTO> UpdateStatus(UpdateStatusToDoTaskRequestDTO requestDto);
-    Task DeleteTask(DeleteToDoTaskRequestDTO requestDto);
+    Task<UpdateDescriptionToDoTaskResponseDTO> UpdateDescription(UpdateDescriptionToDoTaskRequestDTO request, int id);
+    Task<UpdateStatusToDoTaskResponseDTO> UpdateStatus(int id);
+    Task DeleteTask(int id);
 }
