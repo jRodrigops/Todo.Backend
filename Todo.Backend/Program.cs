@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Todo.Backend.Context;
 using Todo.Backend.DependencyInjection;
 using Todo.Backend.Mapper;
+using Todo.Backend.Middleware;
 using Todo.Backend.Repositories;
 using Todo.Backend.Services;
 
@@ -21,10 +22,34 @@ builder.Services.AddScoped<IToDoTaskService, ToDoTaskService>();
 
 string mySqlConnection = builder.Configuration.GetConnectionString("DefaultConnection");
 
+
 builder.Services.AddDbContext<TodoDbContext>(option => option.UseMySql(mySqlConnection, ServerVersion.AutoDetect(mySqlConnection)));
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
+});
 
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+else
+{
+    app.UseExceptionHandler("/error"); // Middleware padrão para manuseio de exceções
+    app.UseHsts();
+}
+
+app.UseMiddleware<TreatedExceptionMiddleware>();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
