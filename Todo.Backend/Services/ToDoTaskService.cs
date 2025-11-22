@@ -61,7 +61,8 @@ public class ToDoTaskService : IToDoTaskService
         
         toDoTask.Description = request.Description;
 
-        _todoDbContext.SaveChanges();
+        _todoDbContext.ToDoTask.Update(toDoTask);
+        await _todoDbContext.SaveChangesAsync();
 
         UpdateDescriptionToDoTaskResponseDTO updateDescriptionToDoTaskResponse = _mapper.Map<UpdateDescriptionToDoTaskResponseDTO>(toDoTask);
 
@@ -77,16 +78,10 @@ public class ToDoTaskService : IToDoTaskService
             throw new TreatedException("Not Found", StatusCodes.Status404NotFound, "Esta task nao foi encontrada");
         }
 
-        if (toDoTask.Completed == false)
-        {
-            toDoTask.Completed = true;
-        }
-        else
-        {
-            toDoTask.Completed = false;
-        }
+        toDoTask.Completed = !toDoTask.Completed;
         
-        _todoDbContext.SaveChanges();
+        _todoDbContext.ToDoTask.Update(toDoTask);
+        await _todoDbContext.SaveChangesAsync();
 
         UpdateStatusToDoTaskResponseDTO responseDto = _mapper.Map<UpdateStatusToDoTaskResponseDTO>(toDoTask);
 
@@ -102,7 +97,7 @@ public class ToDoTaskService : IToDoTaskService
             throw new TreatedException("Not Found", StatusCodes.Status404NotFound, "Esta task nao foi encontrada");
         }
 
-        _todoDbContext.Remove(toDoTask);
-        _todoDbContext.SaveChanges();
+        _todoDbContext.ToDoTask.Remove(toDoTask);
+        await _todoDbContext.SaveChangesAsync();
     }
 }
