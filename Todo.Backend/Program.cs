@@ -23,7 +23,7 @@ builder.Services.AddScoped<IToDoTaskService, ToDoTaskService>();
 string mySqlConnection = builder.Configuration.GetConnectionString("DefaultConnection");
 
 
-builder.Services.AddDbContext<TodoDbContext>(option => option.UseMySql(mySqlConnection, ServerVersion.AutoDetect(mySqlConnection)));
+builder.Services.AddDbContext<TodoDbContext>(option => option.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddCors(options =>
 {
